@@ -388,8 +388,6 @@ class NoiseReducerApp(ctk.CTk):
         else:
             noise_part = y
 
-        # n_fft=2048: Higher resolution allows distinguishing voice from noise better
-        # prop_decrease=0.75: Only remove 75% of noise. Keeps voice natural.
         stationary_args = {
             "n_std_thresh_stationary": 1.3,
             "prop_decrease": 1,
@@ -427,17 +425,13 @@ class NoiseReducerApp(ctk.CTk):
             self.after(0, lambda: self._handle_cancellation(file_path))
             return
 
-        # 4. POST-PROCESSING: Gentle Low Pass (12kHz)
         try:
             reduced_full = np.concatenate(reduced_parts) if reduced_parts else np.array([], dtype=np.float32)
 
-            # We moved the cut from 8000Hz to 12000Hz.
-            # This keeps the "air" and "crispness" while still cutting super-high whining.
             nyquist = 0.5 * sr
             cutoff = 10000 / nyquist
 
             if cutoff < 1.0:
-                # Use a steeper order (8) but higher frequency
                 b, a = scipy.signal.butter(8, cutoff, btype='low', analog=False)
                 reduced_full = scipy.signal.filtfilt(b, a, reduced_full)
 
