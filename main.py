@@ -1,10 +1,6 @@
 import os
 import threading
-import ctypes
-import tempfile
-import traceback
 import subprocess
-from typing import Optional
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageDraw, ImageFont
@@ -186,6 +182,7 @@ class NoiseReducerApp(ctk.CTk):
     def update_recent_folders_ui(self):
         # clear
         for w in self.recent_scroll.winfo_children():
+            w.grid_forget()
             w.destroy()
 
         for folder in list(self.recent_folders):
@@ -220,6 +217,7 @@ class NoiseReducerApp(ctk.CTk):
             # Clear existing widgets
             for w in self.recent_files_scroll.winfo_children():
                 try:
+                    w.grid_forget()
                     w.destroy()
                 except:
                     pass
@@ -373,6 +371,7 @@ class NoiseReducerApp(ctk.CTk):
         """Remove card UI and remove from queue/state. Only for pending or done items."""
         if file_path in self.file_cards:
             card = self.file_cards[file_path]["card"]
+            card.grid_forget()
             card.destroy()
             del self.file_cards[file_path]
         if file_path in self.file_queue:
